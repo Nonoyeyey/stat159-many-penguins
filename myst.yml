@@ -10,7 +10,7 @@ project:
       github: Nonoyeyey
     - name: {literal: Yiii66w}
       github: Yiii66w
-  github: https://github.com/Yiii66w/stat159-many-penguins
+  github: https://github.com/Nonoyeyey/stat159-many-penguins
   license: CC-BY-4.0
   toc:
     - file: index.md

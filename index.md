@@ -21,7 +21,7 @@ from the AVONET bird-traits database.
 
 ## Slides
 
-Our pitch deck (RevealJS) is published next to this site at [`/slides/`](https://yiii66w.github.io/stat159-many-penguins/slides/). The source is `slides/index.html` in the repository.
+Our pitch deck (RevealJS) is published next to this site at [`/slides/`](https://nonoyeyey.github.io/stat159-many-penguins/slides/). The source is `slides/index.html` in the repository.
 
 ## Data
 
