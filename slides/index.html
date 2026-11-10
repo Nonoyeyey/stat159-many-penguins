@@ -29,12 +29,12 @@
 
 <section>
   <h1>Many Penguins</h1>
-  <h3>Mapping 18 penguin species when some measurements are missing</h3>
+  <h3>How penguin traits covary, and how to map them when measurements are missing</h3>
   <p class="small">STAT 159 · Nonoyeyey &amp; Yiii66w · TidyTuesday 2026-07-14 (AVONET data)</p>
   <aside class="notes">
-    Hi! Our project uses the Many Penguins dataset from TidyTuesday. I worked on the README's
-    second question: how do we make an ordination, a 2-D map of the penguins, when some of the
-    measurements are missing?
+    Hi! Our project uses the Many Penguins dataset from TidyTuesday. Yiii66w answered the README's
+    first question (how traits covary) and Nonoyeyey answered the second (mapping penguins when
+    some measurements are missing).
   </aside>
 </section>
 
@@ -58,6 +58,24 @@
     It's like the famous Palmer penguins data, but with 18 species instead of 3. The catch:
     a quarter of the birds are missing at least one measurement, and standard PCA can't handle
     missing values.
+  </aside>
+</section>
+
+<section>
+  <h2>Q1 (Yiii66w): do traits covary?</h2>
+  <img class="fig wide" src="figures/wing_beak_scatter.png" alt="Scatter plot of wing length against beak length for all penguins">
+  <p class="small">Wing length vs. beak (culmen) length across all penguins: <strong>r ≈ 0.69</strong>. Penguins with longer wings tend to have longer beaks.</p>
+  <aside class="notes">
+    Yiii66w took the first README question: how do traits covary? Wing length and beak length are
+    positively correlated, r about 0.69, so bigger-winged penguins tend to have longer beaks.
+  </aside>
+</section>
+
+<section>
+  <h2>Q2 (Nonoyeyey): what about missing values?</h2>
+  <p>23 of 93 birds are missing at least one measurement, and standard PCA can't handle that.</p>
+  <aside class="notes">
+    I took the second question: how do we make a 2-D map of the penguins when some measurements are missing?
   </aside>
 </section>
 

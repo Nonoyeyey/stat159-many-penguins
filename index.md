@@ -17,7 +17,8 @@ from the AVONET bird-traits database.
 
 ## Analyses
 
-- [Q2: Ordination when some traits are missing](analysis/q2-ordination-missing.ipynb), which compares complete-case PCA, iterative-PCA imputation and Gower PCoA
+- [Q1: Wing length vs. beak length](analysis/q1-wing-beak.md) (Yiii66w), a scatter plot and correlation of two traits across all penguins
+- [Q2: Ordination when some traits are missing](analysis/q2-ordination-missing.ipynb) (Nonoyeyey), which compares complete-case PCA, iterative-PCA imputation and Gower PCoA
 
 ## Slides
 

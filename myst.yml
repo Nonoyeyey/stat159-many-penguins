@@ -16,6 +16,7 @@ project:
     - file: index.md
     - title: Analyses
       children:
+        - file: analysis/q1-wing-beak.md
         - file: analysis/q2-ordination-missing.ipynb
 site:
   title: Many Penguins
