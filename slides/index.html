@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Many Penguins: Mapping Penguins with Missing Data</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+  <style>
+    .reveal h1, .reveal h2 { color: #1f3b57; text-transform: none; }
+    .reveal h2 { font-size: 1.5em; }
+    .reveal { font-size: 30px; }
+    .reveal .small { font-size: 0.7em; color: #555; }
+    .reveal table { font-size: 0.72em; margin: 0.6em auto; }
+    .reveal table th, .reveal table td { padding: 0.25em 0.6em; }
+    .reveal .big-number { font-size: 2.2em; font-weight: 700; color: #c0392b; line-height: 1; }
+    .reveal .cols { display: flex; gap: 1.2em; align-items: center; }
+    .reveal .cols > div { flex: 1; }
+    .reveal img.fig { max-height: 520px; margin: 0.2em auto; display: block; }
+    .reveal img.wide { max-width: 100%; max-height: 470px; }
+    .reveal .good { color: #1a7f37; font-weight: 600; }
+    .reveal .bad  { color: #c0392b; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<section>
+  <h1>Many Penguins</h1>
+  <h3>Mapping 18 penguin species when some measurements are missing</h3>
+  <p class="small">STAT 159 · Nonoyeyey &amp; Yiii66w · TidyTuesday 2026-07-14 (AVONET data)</p>
+  <aside class="notes">
+    Hi! Our project uses the Many Penguins dataset from TidyTuesday. I worked on the README's
+    second question: how do we make an ordination, a 2-D map of the penguins, when some of the
+    measurements are missing?
+  </aside>
+</section>
+
+<section>
+  <h2>The data</h2>
+  <div class="cols">
+    <div>
+      <ul>
+        <li><strong>93</strong> individual penguins</li>
+        <li><strong>18</strong> species in <strong>6</strong> genera</li>
+        <li><strong>9</strong> body measurements: beak (×4), tarsus, wing, Kipp's distance, secondary feather, tail</li>
+      </ul>
+    </div>
+    <div>
+      <p class="big-number">23 / 93</p>
+      <p>birds are missing at least one measurement</p>
+      <p class="small">up to 21% missing for some wing traits</p>
+    </div>
+  </div>
+  <aside class="notes">
+    It's like the famous Palmer penguins data, but with 18 species instead of 3. The catch:
+    a quarter of the birds are missing at least one measurement, and standard PCA can't handle
+    missing values.
+  </aside>
+</section>
+
+<section>
+  <h2>Missing values come in blocks</h2>
+  <img class="fig" src="figures/missingness.png" alt="Heatmap of missing measurements by bird and trait, grouped by genus">
+  <p class="small">Birds missing Kipp's distance also miss secondary-feather length, and usually wing length too.</p>
+  <aside class="notes">
+    Red cells are missing values. They aren't random speckles. Whole wing-measurement blocks are
+    missing for some birds, spread across 14 of the 18 species. If we simply drop those birds, we
+    lose 23 birds and 124 measurements that were actually taken.
+  </aside>
+</section>
+
+<section>
+  <h2>Three ways to handle it</h2>
+  <table>
+    <thead><tr><th>Approach</th><th>Idea</th><th>Birds kept</th></tr></thead>
+    <tbody>
+      <tr><td><strong>A. Complete-case PCA</strong></td><td>drop incomplete birds</td><td class="bad">70</td></tr>
+      <tr><td><strong>B. Iterative PCA imputation</strong></td><td>fill gaps from the PCA structure, repeat until stable</td><td class="good">93</td></tr>
+      <tr><td><strong>C. Gower distance + PCoA</strong></td><td>compare birds only on traits both have</td><td class="good">93</td></tr>
+    </tbody>
+  </table>
+  <p class="small">All traits log-transformed and standardized. B is the algorithm behind <code>missMDA::imputePCA</code>, written in base R.</p>
+  <aside class="notes">
+    Option A is the default most people use. Option B fills each gap with a guess based on how
+    the traits correlate, refits the PCA, and repeats until the guesses stop changing. Option C
+    avoids imputing at all: Gower distance compares two birds using only the traits they share,
+    and then we turn the distances into a map.
+  </aside>
+</section>
+
+<section>
+  <h2>Does the imputation actually work?</h2>
+  <img class="fig wide" src="figures/imputation_cv.png" alt="Boxplots of imputation error for each method over 100 masking rounds">
+  <p class="small">We hid known values (copying real missingness patterns) 100 times. Iterative PCA cuts the error by about a third compared with mean filling: <strong>0.63 vs 0.98 SD</strong>.</p>
+  <aside class="notes">
+    To test this honestly, we took the 70 complete birds, hid values using the real missingness
+    patterns, and checked how close each method's guesses were. Iterative PCA beats filling in
+    the mean by a lot. Species means do even better, but they use the species labels, which we
+    don't want an exploratory map to depend on.
+  </aside>
+</section>
+
+<section>
+  <h2>All three maps tell the same story</h2>
+  <img class="fig wide" src="figures/ordinations.png" alt="Three side-by-side ordination plots coloured by genus">
+  <p class="small">Procrustes agreement on shared birds: A vs B = <strong>0.999</strong>; Gower vs the PCAs ≈ 0.95. The × birds (imputed) sit inside their own genus clusters.</p>
+  <aside class="notes">
+    Here are the three maps side by side. Adding the imputed birds doesn't distort the picture at all:
+    the imputed map matches the complete-case map almost perfectly on the shared birds, and now we
+    also get to see the 23 birds that were dropped before.
+  </aside>
+</section>
+
+<section>
+  <h2>What the axes mean</h2>
+  <div class="cols">
+    <div style="flex: 1.4"><img class="fig" src="figures/biplot.png" alt="PCA biplot with trait loading arrows"></div>
+    <div>
+      <p><strong>PC1 (54%) = size</strong><br><span class="small">little penguins → king and emperor penguins</span></p>
+      <p><strong>PC2 (21%) = shape</strong><br><span class="small">wide bills and long tails (<em>Eudyptes</em>, <em>Pygoscelis</em>) vs. long slender bills and short tails (<em>Spheniscus</em>, <em>Aptenodytes</em>)</span></p>
+    </div>
+  </div>
+  <aside class="notes">
+    The first axis is basically overall body size: every trait points the same way. The second axis
+    is shape: crested and brush-tailed penguins have wide bills and long tails, while banded
+    penguins and king and emperor penguins have long, slender bills and short tails.
+  </aside>
+</section>
+
+<section>
+  <h2>Takeaways</h2>
+  <ul>
+    <li>Dropping incomplete birds wastes <strong>25%</strong> of the sample.</li>
+    <li><strong>Iterative PCA imputation</strong> keeps everyone, is validated on held-out values, and gives the same map.</li>
+    <li>Gower PCoA is a no-imputation check that agrees.</li>
+    <li>Always <strong>mark imputed points</strong> so viewers know which are less certain.</li>
+  </ul>
+  <p class="small">Caveat: assumes values are missing at random, and most species have only 4–5 birds.</p>
+  <p class="small">Full analysis and code are on our MyST website (built with GitHub Actions and deployed to GitHub Pages).</p>
+  <aside class="notes">
+    So our answer to the README question: yes, there's a good way. Use regularized iterative PCA
+    imputation, check it against a no-imputation method like Gower PCoA, and mark which points were
+    imputed. Thanks! The full notebook is on our website.
+  </aside>
+</section>
+
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({ hash: true, slideNumber: true, plugins: [RevealNotes] });
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+# See docs at: https://mystmd.org/guide/frontmatter
+version: 1
+project:
+  id: b5fd25d2-6faa-433e-be92-adda3e3faaca
+  title: Many Penguins
+  description: STAT 159 group project on the TidyTuesday Many Penguins dataset (AVONET penguin morphometrics).
+  keywords: [penguins, tidytuesday, morphometrics, R]
+  authors:
+    - name: {literal: Nonoyeyey}
+      github: Nonoyeyey
+    - name: {literal: Yiii66w}
+      github: Yiii66w
+  github: https://github.com/Yiii66w/stat159-many-penguins
+  license: CC-BY-4.0
+  toc:
+    - file: index.md
+    - title: Analyses
+      children:
+        - file: analysis/q2-ordination-missing.ipynb
+site:
+  template: book-theme
+  options:
+    folders: true
