@@ -18,6 +18,7 @@ project:
       children:
         - file: analysis/q2-ordination-missing.ipynb
 site:
+  title: Many Penguins
   template: book-theme
   options:
     folders: true
